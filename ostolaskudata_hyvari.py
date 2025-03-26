@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Kovakoodattu data taulukosta
 data = {
@@ -39,26 +40,12 @@ data = {
     "Lähde": [
         "Avoindata.fi", "paijatha.fi", "Tutkihankintoja.fi (avoindata.fi aineisto)", 
         "Tutkihankintoja.fi (avoindata.fi aineisto)", "Eloisan verkkosivut", 
-        "Päättäjäskirja (Keusote) / Tietojohtajan sähköposti", 
+        "Keusote / Tietojohtajan sähköposti", 
         "Avoindata.fi (HUS ostolaskut)", "Avoindata.fi",
         "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
         "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
         "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
         "Ei tiedossa", "Ei tiedossa"
-    ],
-    "Lisätieto": [
-        "Erillinen datasetti Avoindata.fi:ssä. Varha avasi ostolaskudatan ensimmäisenä hyvinvointialueena.",
-        "Data ladattavissa hyvinvointialueen sivuilta (ostolaskudata 2023 XLSX).",
-        "2025 aineistossa ei vielä mukana, vain valtion laskut. Päivitystiheys epäselvä. Puolivuosittain?",
-        "2025 aineistossa ei vielä mukana, vain valtion laskut. Päivitystiheys epäselvä.",
-        "Julkaistaan jatkossa kerran vuodessa.",
-        "Päivittyy 1x/kk Power BI -raporttina, ei vielä julkaistu verkkosivuilla.",
-        "HUS toimii poikkeuksellisena julkisuusvelvollisuuden yhteisönä Uudenmaan alueella. Julkaisee ostolaskut 4x/vuosi.",
-        "Data julkaistu tilinpäätöksen valmistuttua 2024.",
-        "Ei lisätietoa", "Ei lisätietoa", "Ei lisätietoa", "Ei lisätietoa",
-        "Ei lisätietoa", "Ei lisätietoa", "Ei lisätietoa", "Ei lisätietoa",
-        "Ei lisätietoa", "Ei lisätietoa", "Ei lisätietoa", "Ei lisätietoa",
-        "Ei lisätietoa", "Ei lisätietoa"
     ]
 }
 
@@ -67,29 +54,61 @@ df = pd.DataFrame(data)
 
 # Streamlit-sovellus
 st.title("Hyvinvointialueiden Ostolaskudatan Julkaisutilanne 2025")
-st.markdown("Päivitetty lista Suomen hyvinvointialueiden ostolaskudatan julkaisutilanteesta maaliskuussa 2025.")
+st.markdown("**Päivitetty lista Suomen hyvinvointialueiden ostolaskudatan julkaisutilanteesta maaliskuussa 2025.**")
 
-# Suodatus hyvinvointialueen mukaan
+# Kokonaiskuva julkaisutilanteesta
+st.header("Kokonaiskuva Julkaisutilanteesta")
+
+# Pylväsdiagrammi: Julkaisutilanne
+st.subheader("Julkaisutilanne Hyvinvointialueittain")
+fig1, ax1 = plt.subplots()
+df['Julkaistu?'].value_counts().plot(kind='bar', color=['green', 'orange', 'red'], ax=ax1)
+ax1.set_title("Julkaisutilanne")
+ax1.set_xlabel("Julkaisu")
+ax1.set_ylabel("Hyvinvointialueiden määrä")
+st.pyplot(fig1)
+
+# Piirakkadiagrammi: Julkaisut vs. Ei julkaisut
+st.subheader("Julkaisut vs. Ei julkaisut")
+fig2, ax2 = plt.subplots()
+df['Julkaistu?'].value_counts().plot(kind='pie', autopct='%1.1f%%', colors=['green', 'red', 'orange'], ax=ax2)
+ax2.set_ylabel("")
+ax2.set_title("Julkaisujen osuudet")
+st.pyplot(fig2)
+
+# Muotokohtainen jakautuminen
+st.subheader("Julkaisujen Muotokohtainen Jakautuminen")
+fig3, ax3 = plt.subplots()
+df['Muoto'].value_counts().plot(kind='bar', color='blue', ax=ax3)
+ax3.set_title("Julkaisujen Muotokohtainen Jakautuminen")
+ax3.set_xlabel("Muoto")
+ax3.set_ylabel("Määrä")
+st.pyplot(fig3)
+
+# Aluekohtainen tarkastelu
+st.header("Aluekohtainen Tarkastelu")
 selected_region = st.selectbox("Valitse hyvinvointialue", ["Kaikki"] + list(df["Hyvinvointialue / Erityisyksikkö"]))
 if selected_region != "Kaikki":
     filtered_df = df[df["Hyvinvointialue / Erityisyksikkö"] == selected_region]
 else:
     filtered_df = df
 
-# Näytetään taulukko
 st.dataframe(filtered_df)
 
-# Yhteenveto julkaisutilanteesta
-published_count = len(df[df["Julkaistu?"] == "Kyllä"]) + len(df[df["Julkaistu?"] == "Kyllä/Tulossa"])
-total_count = len(df)
-st.markdown(f"**Julkaistuja tai tulossa olevia alueita:** {published_count} / {total_count}")
-st.bar_chart(df["Julkaistu?"].value_counts())
+# Lähteiden jakautuminen
+st.subheader("Lähteiden Jakautuminen")
+fig4, ax4 = plt.subplots()
+df['Lähde'].value_counts().plot(kind='bar', color='purple', ax=ax4)
+ax4.set_title("Lähteiden Jakautuminen")
+ax4.set_xlabel("Lähde")
+ax4.set_ylabel("Määrä")
+st.pyplot(fig4)
 
-# Kehitysehdotukset
+# Yhteenveto ja kehitysehdotukset
 st.header("Yhteenveto ja Kehitysehdotukset")
 st.markdown("""
-- **Tietojen päivittäminen:** Varmista, että kaikki julkaisutiedot ovat ajan tasalla.
-- **Tietolähteiden yhtenäistäminen:** Käytä keskitettyä portaalia (esim. Avoindata.fi) datan löydettävyyden parantamiseksi.
-- **Päivitystiheys:** Selkeytä päivitystiheys kaikille alueille.
-- **Tiedon laatu:** Varmista, että datamuodot ja tiedostotyypit ovat yhtenäisiä.
+- **Julkaisemattomat alueet:** Tarpeen saada lisää tietoa julkaisutilanteesta.
+- **Yhtenäiset käytännöt:** Datan muoto ja julkaisukäytännöt tulisi yhdenmukaistaa.
+- **Avoindata.fi-portaali:** Suositellaan keskitettyä julkaisua kansalliseen portaaliin.
+- **Visualisointi ja tiedon hyödyntäminen:** Parannetaan julkisuusraportoinnin ja seurannan helppoutta.
 """)
