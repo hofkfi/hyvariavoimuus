@@ -4,32 +4,53 @@ import numpy as np
 
 # Mock data for visualization
 regions = ["Pohjois-Pohjanmaa", "Pirkanmaa", "Varsinais-Suomi", "Uusimaa", "Lapland"]
-categories = ["Politiikka", "Portaali", "Laatu", "Vaikuttavuus"]
-data = np.random.randint(50, 100, size=(5, 4))
+indicators = {
+    "Politiikka": ["Avoimen datan strategia", "Lainsäädännön noudattaminen", "Koulutus ja tuki"],
+    "Portaali": ["Portaalin käytettävyys", "Teknologinen infrastruktuuri", "Avoimuuden indikaattorit"],
+    "Laatu": ["Datan täydellisyys", "Datan tarkkuus", "Anonymisointi"],
+    "Vaikuttavuus": ["Datan käyttöaste", "Käyttäjäpalaute", "Talousvaikutukset"]
+}
 
-# Create a DataFrame for the scores
-df = pd.DataFrame(data, index=regions, columns=categories)
+# Generate random scores for each indicator
+data = {}
+for category, questions in indicators.items():
+    for question in questions:
+        data[question] = np.random.randint(50, 100, size=len(regions))
+
+# Create DataFrame
+df = pd.DataFrame(data, index=regions)
 
 # Streamlit App Layout
-st.title("Hyvinvointialueiden Open Data Maturity Mittaristo")
-st.markdown("Tämä mittaristo visualisoi hyvinvointialueiden avoimen datan kypsyyden neljässä pääkategoriassa: Politiikka, Portaali, Laatu ja Vaikuttavuus.")
+st.title("Hyvinvointialueiden Avoimuus -Mittarist")
+st.markdown("""
+Tämä mittaristo perustuu Open Data Maturity Index -mittaristoon ja Open Knowledge Finlandin tekemään tutkimukseen, jonka tavoitteena on auttaa hyvinvointialueita avoimuuden mittaroinnissa.
+Tämä mittaristo visualisoi hyvinvointialueiden avoimen datan kypsyyden neljässä pääkategoriassa: 
+- **Politiikka**
+- **Portaali**
+- **Laatu**
+- **Vaikuttavuus**
 
-st.header("Mittariston Kokonaiskuva")
-st.bar_chart(df)
+Voit valita tietyn alueen ja indikaattorin tarkasteluun sekä verrata indikaattorin arvoja eri alueiden kesken.
+""")
+# Valitse indikaattori
+selected_category = st.selectbox("Valitse kategoria", list(indicators.keys()))
+selected_question = st.selectbox("Valitse indikaattori", indicators[selected_category])
 
-st.header("Yksityiskohtainen Aluekohtainen Tarkastelu")
+# Näytä valitun indikaattorin tulokset
+st.header(f"Indikaattorin '{selected_question}' vertailu eri alueilla")
+st.bar_chart(df[selected_question])
+
+# Yksityiskohtainen tarkastelu
+st.header("Aluekohtainen tulos")
 selected_region = st.selectbox("Valitse hyvinvointialue", regions)
-region_data = df.loc[selected_region]
+region_score = df.loc[selected_region, selected_question]
+st.metric(f"{selected_region} - {selected_question}", region_score)
 
-st.subheader(f"Hyvinvointialue: {selected_region}")
-st.metric("Politiikka", region_data["Politiikka"])
-st.metric("Portaali", region_data["Portaali"])
-st.metric("Laatu", region_data["Laatu"])
-st.metric("Vaikuttavuus", region_data["Vaikuttavuus"])
+# Näytä koko data DataFrame-muodossa
+st.header("Kaikki indikaattorit")
+st.dataframe(df)
 
-st.header("Indikaattorien Vertailu")
-st.line_chart(df)
-
+# Yhteenveto ja kehityssuositukset
 st.header("Yhteenveto ja Kehityssuositukset")
 st.markdown("""
 - **Politiikka:** Lisää koulutusta ja strategista ohjeistusta.
