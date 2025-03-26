@@ -54,61 +54,54 @@ df = pd.DataFrame(data)
 
 # Streamlit-sovellus
 st.title("Hyvinvointialueiden Ostolaskudatan Julkaisutilanne 2025")
-st.markdown("**Päivitetty lista Suomen hyvinvointialueiden ostolaskudatan julkaisutilanteesta maaliskuussa 2025.**")
+st.markdown("Päivitetty lista Suomen hyvinvointialueiden ostolaskudatan julkaisutilanteesta maaliskuussa 2025.")
 
 # Kokonaiskuva julkaisutilanteesta
 st.header("Kokonaiskuva Julkaisutilanteesta")
+st.bar_chart(df['Julkaistu?'].value_counts())
 
-# Pylväsdiagrammi: Julkaisutilanne
-st.subheader("Julkaisutilanne Hyvinvointialueittain")
+# Yksittäisen alueen tarkastelu
+st.header("Yksittäisen Hyvinvointialueen Tarkastelu")
+selected_region = st.selectbox("Valitse hyvinvointialue", df["Hyvinvointialue / Erityisyksikkö"])
+
+region_data = df[df["Hyvinvointialue / Erityisyksikkö"] == selected_region]
+
+st.subheader(f"Julkaisutilanne: {selected_region}")
+st.markdown(f"- **Julkaistu?**: {region_data['Julkaistu?'].values[0]}")
+st.markdown(f"- **Vuosi**: {region_data['Vuosi'].values[0]}")
+st.markdown(f"- **Muoto**: {region_data['Muoto'].values[0]}")
+st.markdown(f"- **Lähde**: {region_data['Lähde'].values[0]}")
+
+# Vertaileva analyysi suhteessa muihin
+st.header("Alueen Julkaisutilanne Suhteessa Muihin")
 fig1, ax1 = plt.subplots()
-df['Julkaistu?'].value_counts().plot(kind='bar', color=['green', 'orange', 'red'], ax=ax1)
-ax1.set_title("Julkaisutilanne")
-ax1.set_xlabel("Julkaisu")
-ax1.set_ylabel("Hyvinvointialueiden määrä")
+df['Julkaistu?'].value_counts().plot(kind='pie', autopct='%1.1f%%', colors=['green', 'red', 'orange'], ax=ax1)
+ax1.set_title("Julkaisujen Osuus Kaikista Alueista")
+ax1.set_ylabel("")
 st.pyplot(fig1)
 
-# Piirakkadiagrammi: Julkaisut vs. Ei julkaisut
-st.subheader("Julkaisut vs. Ei julkaisut")
+# Muodon vertailu suhteessa muihin
+st.header("Muodon Vertailu Suhteessa Muihin Alueisiin")
 fig2, ax2 = plt.subplots()
-df['Julkaistu?'].value_counts().plot(kind='pie', autopct='%1.1f%%', colors=['green', 'red', 'orange'], ax=ax2)
-ax2.set_ylabel("")
-ax2.set_title("Julkaisujen osuudet")
+df['Muoto'].value_counts().plot(kind='bar', color='blue', ax=ax2)
+ax2.set_title("Julkaisumuotojen Jakautuminen")
+ax2.set_xlabel("Julkaisumuoto")
+ax2.set_ylabel("Hyvinvointialueiden määrä")
 st.pyplot(fig2)
 
-# Muotokohtainen jakautuminen
-st.subheader("Julkaisujen Muotokohtainen Jakautuminen")
+# Lähteiden vertailu suhteessa muihin
+st.header("Lähteiden Vertailu Suhteessa Muihin Alueisiin")
 fig3, ax3 = plt.subplots()
-df['Muoto'].value_counts().plot(kind='bar', color='blue', ax=ax3)
-ax3.set_title("Julkaisujen Muotokohtainen Jakautuminen")
-ax3.set_xlabel("Muoto")
-ax3.set_ylabel("Määrä")
+df['Lähde'].value_counts().plot(kind='bar', color='purple', ax=ax3)
+ax3.set_title("Lähteiden Jakautuminen")
+ax3.set_xlabel("Lähde")
+ax3.set_ylabel("Hyvinvointialueiden määrä")
 st.pyplot(fig3)
-
-# Aluekohtainen tarkastelu
-st.header("Aluekohtainen Tarkastelu")
-selected_region = st.selectbox("Valitse hyvinvointialue", ["Kaikki"] + list(df["Hyvinvointialue / Erityisyksikkö"]))
-if selected_region != "Kaikki":
-    filtered_df = df[df["Hyvinvointialue / Erityisyksikkö"] == selected_region]
-else:
-    filtered_df = df
-
-st.dataframe(filtered_df)
-
-# Lähteiden jakautuminen
-st.subheader("Lähteiden Jakautuminen")
-fig4, ax4 = plt.subplots()
-df['Lähde'].value_counts().plot(kind='bar', color='purple', ax=ax4)
-ax4.set_title("Lähteiden Jakautuminen")
-ax4.set_xlabel("Lähde")
-ax4.set_ylabel("Määrä")
-st.pyplot(fig4)
 
 # Yhteenveto ja kehitysehdotukset
 st.header("Yhteenveto ja Kehitysehdotukset")
 st.markdown("""
-- **Julkaisemattomat alueet:** Tarpeen saada lisää tietoa julkaisutilanteesta.
-- **Yhtenäiset käytännöt:** Datan muoto ja julkaisukäytännöt tulisi yhdenmukaistaa.
-- **Avoindata.fi-portaali:** Suositellaan keskitettyä julkaisua kansalliseen portaaliin.
-- **Visualisointi ja tiedon hyödyntäminen:** Parannetaan julkisuusraportoinnin ja seurannan helppoutta.
+- **Aluekohtainen näkyvyys:** Tarvetta parantaa aluekohtaisen datan julkistamista.
+- **Yhtenäiset käytännöt:** Datan muoto ja julkaisutapa tulisi harmonisoida.
+- **Keskitetyt julkaisualustat:** Yhtenäinen julkaisu esimerkiksi Avoindata.fi-portaalissa parantaisi löydettävyyttä.
 """)
