@@ -1,126 +1,70 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.express as px
 
-# Hyvinvointialueet ja mittarit
-regions = ["Pohjois-Pohjanmaa", "Pirkanmaa", "Varsinais-Suomi", "Uusimaa", "Lapland"]
+# Mock-data (voit korvata oikealla datalla)
+regions = [
+    "Varsinais-Suomi", "Pirkanmaa", "Pohjois-Pohjanmaa",
+    "Keski-Uusimaa", "Pohjois-Savo", "Etelä-Savo", "HUS",
+    "Päijät-Häme", "Kainuu", "Keski-Suomi", "Etelä-Pohjanmaa",
+    "Satakunta", "Pohjanmaa", "Kanta-Häme", "Itä-Uusimaa",
+    "Länsi-Uusimaa", "Lapland", "Vantaa-Kerava", "Pohjois-Karjala",
+    "Keski-Pohjanmaa", "Etelä-Karjala"
+]
+
 categories = ["Politiikka", "Portaali", "Laatu", "Vaikuttavuus"]
-indicators = {
-    "Politiikka": ["Avoimen datan strategia", "Lainsäädännön noudattaminen", "Koulutus ja tuki"],
-    "Portaali": ["Portaalin käytettävyys", "Teknologinen infrastruktuuri", "Avoimuuden indikaattorit"],
-    "Laatu": ["Datan täydellisyys", "Datan tarkkuus", "Anonymisointi"],
-    "Vaikuttavuus": ["Datan käyttöaste", "Käyttäjäpalaute", "Talousvaikutukset"]
-}
+np.random.seed(42)
+data = np.random.randint(20, 100, size=(len(regions), len(categories)))
+df = pd.DataFrame(data, index=regions, columns=categories)
 
-# Kokonaiskuvan data
-data = np.random.randint(50, 100, size=(5, 4))
-df_summary = pd.DataFrame(data, index=regions, columns=categories)
+# App UI
+st.set_page_config(layout="wide")
+st.title("Hyvinvointialueiden Open Data Maturity Mittaristo")
+st.markdown("Visualisointi hyvinvointialueiden avoimen datan kypsyydestä neljässä pääkategoriassa:")
 
-# Indikaattorikohtainen data
-data_detailed = {}
-for category, questions in indicators.items():
-    for question in questions:
-        data_detailed[question] = np.random.randint(50, 100, size=len(regions))
-df_detailed = pd.DataFrame(data_detailed, index=regions)
+# Yhteenveto
+with st.expander("ℹ️ Mittariston selitys"):
+    st.markdown("""
+    - **Politiikka**: Strateginen ohjeistus, lainsäädännön huomiointi
+    - **Portaali**: Avoindata.fi:n tai vastaavan käytettävyys ja tekninen taso
+    - **Laatu**: Datan tarkkuus, anonymisointi, metadata
+    - **Vaikuttavuus**: Datan käyttö, hyödyntäminen ja näkyvyys yhteiskunnassa
+    """)
 
-# Streamlit App Layout
-st.title("Hyvinvointialueiden avoimuus -mittaristo")
-st.markdown("""
-Tämä mittaristo perustuu Open Data Maturity Index -mittaristoon ja Open Knowledge Finlandin tekemään tutkimukseen, jonka tavoitteena on auttaa hyvinvointialueita avoimuuden mittaroinnissa.
-Tämä mittaristo visualisoi hyvinvointialueiden avoimen datan kypsyyden neljässä pääkategoriassa: 
-- **Politiikka**
-- **Portaali**
-- **Laatu**
-- **Vaikuttavuus**
+# Visualisointi: bar chart
+st.subheader("📊 Aluekohtainen vertailu (bar chart)")
+st.bar_chart(df)
 
-Voit valita tietyn alueen ja indikaattorin tarkasteluun sekä verrata indikaattorin arvoja eri alueiden kesken.
-""")
+# Interaktiivinen aluevalinta
+st.subheader("🔍 Alueen tarkempi tarkastelu")
+selected_region = st.selectbox("Valitse hyvinvointialue", df.index.tolist())
+region_data = df.loc[selected_region]
 
-# Mittariston kokonaiskuva
-st.header("Mittariston kokonaiskuva")
-st.bar_chart(df_summary)
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Politiikka", region_data["Politiikka"])
+col2.metric("Portaali", region_data["Portaali"])
+col3.metric("Laatu", region_data["Laatu"])
+col4.metric("Vaikuttavuus", region_data["Vaikuttavuus"])
 
-# Yksityiskohtainen aluekohtainen tarkastelu
-st.header("Yksityiskohtainen aluekohtainen tarkastelu")
-selected_region = st.selectbox("Valitse hyvinvointialue", regions)
-region_data = df_summary.loc[selected_region]
+# Radar-chart vaihtoehto (plotly)
+st.subheader("🌐 Vertailuindikaattorit (radar chart)")
+fig = px.line_polar(
+    r=region_data.values,
+    theta=region_data.index,
+    line_close=True,
+    title=f"{selected_region}: Open Data Radar",
+    range_r=[0, 100]
+)
+fig.update_traces(fill='toself')
+st.plotly_chart(fig, use_container_width=True)
 
-st.subheader(f"Hyvinvointialue: {selected_region}")
-st.metric("Politiikka", region_data["Politiikka"])
-st.metric("Portaali", region_data["Portaali"])
-st.metric("Laatu", region_data["Laatu"])
-st.metric("Vaikuttavuus", region_data["Vaikuttavuus"])
-
-# Indikaattorin vertailu eri alueiden välillä
-st.header("Indikaattorin vertailu")
-selected_category = st.selectbox("Valitse kategoria", list(indicators.keys()))
-selected_indicator = st.selectbox("Valitse indikaattori", indicators[selected_category])
-
-st.subheader(f"Indikaattorin '{selected_indicator}' vertailu eri alueilla")
-st.bar_chart(df_detailed[selected_indicator])
-
-# Chatbot-toiminto
-st.header("Chatbot: kysy mittaristosta")
-user_input = st.text_input("Kysy kysymys mittaristosta:")
-
-def chatbot_response(question):
-    question = question.lower()
-
-    # Yleistiedustelut
-    if "kokonaiskuva" in question:
-        return "Kokonaiskuva näyttää eri alueiden suoriutumisen neljässä pääkategoriassa: politiikka, portaali, laatu ja vaikuttavuus."
-    
-    # Aluekohtaiset kysymykset
-    for region in regions:
-        if region.lower() in question:
-            region_data = df_summary.loc[region]
-            response = f"Alue {region}:\n"
-            response += f"- Politiikka: {region_data['Politiikka']}\n"
-            response += f"- Portaali: {region_data['Portaali']}\n"
-            response += f"- Laatu: {region_data['Laatu']}\n"
-            response += f"- Vaikuttavuus: {region_data['Vaikuttavuus']}\n"
-            return response
-    
-    # Indikaattorikohtaiset kysymykset
-    for indicator in df_detailed.columns:
-        if indicator.lower() in question:
-            values = df_detailed[indicator]
-            avg_value = values.mean()
-            max_value = values.max()
-            min_value = values.min()
-            max_region = values.idxmax()
-            min_region = values.idxmin()
-            response = f"Indikaattori '{indicator}':\n"
-            response += f"- Keskimääräinen arvo: {avg_value:.2f}\n"
-            response += f"- Korkein arvo: {max_value} ({max_region})\n"
-            response += f"- Matalin arvo: {min_value} ({min_region})\n"
-            return response
-    
-    return "En ymmärtänyt kysymystäsi. Yritä uudelleen!"
-
-# Näytä chatbotin vastaus
-if user_input:
-    response = chatbot_response(user_input)
-    st.write(f"🗣️ **Chatbot:** {response}")
-
-# Näytä kaikki indikaattorit
-st.header("Kaikki indikaattorit")
-st.dataframe(df_detailed)
-
-# Ohjeet ja lähteet
-st.header("Ohjeet ja lähteet")
-st.markdown("""
-- **Avoindata.fi-portaali**: Suomen kansallinen avoimen datan portaali. [Avoindata.fi](https://www.avoindata.fi)
-- **Kuntaliiton ohje ostolaskujen avaamisesta**: Ohje kunnille ostolaskujen julkaisemiseksi avoimena datana. [Kuntaliiton ohje](https://www.kuntaliitto.fi/ajankohtaista/2016/kunnille-ohje-ostolaskujen-avaamisesta-avoimena-datana)
-- **Open Data Maturity Index**: Euroopan komission raportti avoimen datan kypsyydestä. [Open Data Maturity Index](https://data.europa.eu/en/publications/open-data-maturity)
-""")
-
-# Yhteenveto ja kehityssuositukset
-st.header("Yhteenveto ja kehityssuositukset")
-st.markdown("""
-- **Politiikka**: Lisää koulutusta ja strategista ohjeistusta.
-- **Portaali**: Varmista datan käytettävyys ja ajantasaisuus.
-- **Laatu**: Paranna datan tarkkuutta ja anonymisointia.
-- **Vaikuttavuus**: Seuraa datan käyttöastetta ja käyttäjäpalautetta.
+# Suositukset
+st.subheader("✅ Kehityssuositukset")
+st.markdown(f"""
+**{selected_region}**:
+- 💼 Politiikka: { "Hyvällä tasolla" if region_data["Politiikka"] > 60 else "Vaatii vahvistusta" }
+- 🌐 Portaali: { "Käytettävyys kunnossa" if region_data["Portaali"] > 60 else "Teknistä kehitystä tarvitaan" }
+- 📊 Laatu: { "Metadata ja anonymisointi ok" if region_data["Laatu"] > 60 else "Laadunhallinta kaipaa panostusta" }
+- 💡 Vaikuttavuus: { "Data näkyy ja vaikuttaa" if region_data["Vaikuttavuus"] > 60 else "Lisää käyttöä ja näkyvyyttä" }
 """)
