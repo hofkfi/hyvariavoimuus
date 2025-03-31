@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+import pydeck as pdk
 
-# Sivuasetukset ilman wide-tilaa
-st.set_page_config(page_title="Ostolaskudata 2025")
+# Sivuasetukset
+st.set_page_config(page_title="Ostolaskudata 2025", layout="centered")
 
 # Datan luonti
 data = {
@@ -23,48 +25,56 @@ data = {
         "Ei", "Ei", "Ei", "Ei",
         "Ei", "Ei"
     ],
-    "Vuosi": [
-        2023, 2023, 2023, 2023,
-        2023, 2024, 2020, 2023,
-        None, None, None, None,
-        None, None, None, None,
-        None, None, None, None,
-        None, None
-    ],
-    "Muoto": [
-        "Dataset", "Excel (ladattava)", "Dataset (osana aineistoa)",
-        "Dataset (osana aineistoa)", "Excel (ladattava)",
-        "Power BI -raportti", "Dataset", "Excel (ladattava)",
-        "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
-        "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
-        "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
-        "Ei tiedossa", "Ei tiedossa"
-    ],
-    "Lähde": [
-        "Avoindata.fi", "paijatha.fi", "Tutkihankintoja.fi",
-        "Tutkihankintoja.fi", "Eloisan verkkosivut",
-        "Keusote / Tietojohtaja", "Avoindata.fi", "Avoindata.fi",
-        "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
-        "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
-        "Ei tiedossa", "Ei tiedossa", "Ei tiedossa", "Ei tiedossa",
-        "Ei tiedossa", "Ei tiedossa"
-    ]
+    "Latitude": np.random.uniform(60.0, 66.0, 22),
+    "Longitude": np.random.uniform(21.0, 28.0, 22)
 }
 df = pd.DataFrame(data)
 
-# Aloitus
+# Sovelluksen alku
 st.title("📊 Hyvinvointialueiden Ostolaskudatan Julkaisutilanne – 2025")
+st.markdown("Tämä sovellus esittää Suomen hyvinvointialueiden ostolaskudatan julkaisutilanteen maaliskuussa 2025.")
 
-st.markdown("""
-Tämä sovellus esittää Suomen hyvinvointialueiden ostolaskudatan julkaisutilanteen maaliskuussa 2025. 
-Voit tarkastella kokonaistilannetta tai valita yksittäisen alueen nähdäksesi tarkemmat tiedot.
-""")
+# Kartta
+st.header("🗺️ Karttanäkymä: Julkaisutilanne")
+df["Color"] = df["Julkaistu"].apply(lambda x: [0, 200, 0] if x == "Kyllä" else [200, 0, 0])
+st.pydeck_chart(pdk.Deck(
+    initial_view_state=pdk.ViewState(
+        latitude=63.0,
+        longitude=25.0,
+        zoom=4.2,
+        pitch=0,
+    ),
+    layers=[
+        pdk.Layer(
+            "ScatterplotLayer",
+            data=df,
+            get_position='[Longitude, Latitude]',
+            get_fill_color="Color",
+            get_radius=30000,
+            pickable=True
+        )
+    ],
+    tooltip={"text": "{Hyvinvointialue / Erityisyksikkö}\nJulkaistu: {Julkaistu}"}
+))
 
 # Kokonaiskuva
 st.header("Kokonaiskuva Julkaisutilanteesta")
 st.bar_chart(df["Julkaistu"].value_counts())
 
-# Valinta ja tarkastelu
+# Yksittäinen alue
 st.header("Yksittäisen Alueen Tiedot")
 alue = st.selectbox("Valitse hyvinvointialue", df["Hyvinvointialue / Erityisyksikkö"])
-rivi = df[df["Hyvinvointialue / Erity
+rivi = df[df["Hyvinvointialue / Erityisyksikkö"] == alue].iloc[0]
+
+st.markdown(f"""
+**Hyvinvointialue:** {alue}  
+**Julkaistu:** {rivi["Julkaistu"]}  
+""")
+
+# Yhteenveto
+st.header("🧭 Yhteenveto ja Kehitysehdotuksia")
+st.markdown("""
+- 💡 Tarvetta harmonisoida julkaisutavat ja -formaatit.
+- 🌐 Avoindata.fi tai vastaava yhteinen portaali parantaisi saatavuutta.
+- 🔍 Tiedon löydettävyyttä ja käytettävyyttä voi parantaa metatiedon laadulla.
+""")
