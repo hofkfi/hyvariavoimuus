@@ -3,13 +3,31 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
+# Sivuasetukset
+st.set_page_config(page_title="Open Data Maturity", layout="wide")
+
+# Sidebar: ohjeet ja linkit
+with st.sidebar:
+    st.title("📚 Ohjeet ja linkit")
+    st.markdown("""
+    **🔗 Kuntaliiton ohjeistus:**  
+    [Kuntien ja kuntayhtymien ostolaskudatan avaamisen ohje (2021)](https://www.kuntaliitto.fi/julkaisut/2021/2112-kuntien-ja-kuntayhtymien-ostolaskudatan-avaamisen-ohje)
+
+    **🌐 Avoindata.fi Julkaisijan opas:**  
+    [Avoindata.fi - Julkaisijan ohjeet](https://www.avoindata.fi/fi/info/publisher-guide)
+
+    **🧰 Työkalut:**
+    - [Open Data Editor (ODE)](https://github.com/OKFIFinland/Open-Data-Editor)  
+    - [DCAT-AP Validator](https://www.dcat-ap-validator.eu/)  
+    """)
+
 # Mock-data (voit korvata oikealla datalla)
 regions = [
     "Varsinais-Suomi", "Pirkanmaa", "Pohjois-Pohjanmaa",
-    "Keski-Uusimaa", "Pohjois-Savo", "Etelä-Savo", "HUS",
+    "Keski-Uusimaa", "Pohjois-Savo", "Etelä-Savo",
     "Päijät-Häme", "Kainuu", "Keski-Suomi", "Etelä-Pohjanmaa",
     "Satakunta", "Pohjanmaa", "Kanta-Häme", "Itä-Uusimaa",
-    "Länsi-Uusimaa", "Lapland", "Vantaa-Kerava", "Pohjois-Karjala",
+    "Länsi-Uusimaa", "Lappi", "Vantaa ja Kerava", "Pohjois-Karjala",
     "Keski-Pohjanmaa", "Etelä-Karjala"
 ]
 
@@ -18,12 +36,11 @@ np.random.seed(42)
 data = np.random.randint(20, 100, size=(len(regions), len(categories)))
 df = pd.DataFrame(data, index=regions, columns=categories)
 
-# App UI
-st.set_page_config(layout="wide")
+# Titteli
 st.title("Hyvinvointialueiden Open Data Maturity Mittaristo")
 st.markdown("Visualisointi hyvinvointialueiden avoimen datan kypsyydestä neljässä pääkategoriassa:")
 
-# Yhteenveto
+# Selitys
 with st.expander("ℹ️ Mittariston selitys"):
     st.markdown("""
     - **Politiikka**: Strateginen ohjeistus, lainsäädännön huomiointi
@@ -47,7 +64,7 @@ col2.metric("Portaali", region_data["Portaali"])
 col3.metric("Laatu", region_data["Laatu"])
 col4.metric("Vaikuttavuus", region_data["Vaikuttavuus"])
 
-# Radar-chart vaihtoehto (plotly)
+# Radar-chart (plotly)
 st.subheader("🌐 Vertailuindikaattorit (radar chart)")
 fig = px.line_polar(
     r=region_data.values,
