@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 
 # Sivuasetukset
 st.set_page_config(page_title="Open Data Maturity", layout="wide")
@@ -63,18 +62,6 @@ col1.metric("Politiikka", region_data["Politiikka"])
 col2.metric("Portaali", region_data["Portaali"])
 col3.metric("Laatu", region_data["Laatu"])
 col4.metric("Vaikuttavuus", region_data["Vaikuttavuus"])
-
-# Radar-chart (plotly)
-st.subheader("🌐 Vertailuindikaattorit (radar chart)")
-fig = px.line_polar(
-    r=region_data.values,
-    theta=region_data.index,
-    line_close=True,
-    title=f"{selected_region}: Open Data Radar",
-    range_r=[0, 100]
-)
-fig.update_traces(fill='toself')
-st.plotly_chart(fig, use_container_width=True)
 
 # Suositukset
 st.subheader("✅ Kehityssuositukset")
