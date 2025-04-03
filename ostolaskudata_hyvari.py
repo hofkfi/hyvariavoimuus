@@ -25,17 +25,24 @@ with st.sidebar:
     - [DCAT-AP Validator](https://www.dcat-ap-validator.eu/) – tekninen validointityökalu metatiedon yhteentoimivuuden tarkistamiseen (DCAT-AP-standardit)
     """)
 
-# Data mukaan lukien Ahvenanmaa ja HUS
+    st.markdown("""
+    **ℹ️ Huomautus:** Tässä visualisoinnissa keskitytään Suomen 21 hyvinvointialueeseen, jotka perustettiin vuonna 2021 sote-uudistuksen yhteydessä. 
+    Ahvenanmaa ja Helsingin kaupunki (joilla on oma järjestämisvastuu) sekä HUS (joka on erityisyksikkö) on rajattu ulkopuolelle.
+    Vain viralliset hyvinvointialueet on sisällytetty karttaan ja vertailuun.
+    """)
+
+# Data – tarkennettu 21 hyvinvointialueeseen
+# Hyvinkää poistettu, Kainuu palautettu mukaan
+# Koordinaatit säädetty
+
 data = [
     ["Varsinais-Suomi", "Kyllä", "Avoindata.fi", "20.2.2024", "https://www.opendata.fi/data/fi/dataset/varha-ostolaskut", 60.45, 22.26],
     ["Päijät-Häme", "Kyllä", "Alueen omat sivut", "2023", "", 60.98, 25.66],
     ["Pirkanmaa", "Kyllä", "Tutkihankintoja.fi", "2023", "https://www.tutkihankintoja.fi/fi/search?orgs=pirkanmaa", 61.50, 23.77],
     ["Pohjois-Pohjanmaa", "Kyllä", "Tutkihankintoja.fi", "2023", "https://www.tutkihankintoja.fi/fi/search?orgs=ppo", 65.01, 25.47],
-    ["Etelä-Savo (Eloisa)", "Kyllä", "Eloisa.fi", "2023", "https://etelasavonha.fi/ostolaskut", 61.68, 27.27],
-    ["Keski-Uusimaa", "Kyllä", "Power BI", "2024", "https://www.keusote.fi/ostolaskut", 60.41, 25.10],
+    ["Etelä-Savo", "Kyllä", "Eloisa.fi", "2023", "https://etelasavonha.fi/ostolaskut", 61.68, 27.27],
+    ["Keski-Uusimaa", "Kyllä", "Power BI", "2024", "https://www.keusote.fi/ostolaskut", 60.41, 25.08],
     ["Pohjois-Savo", "Kyllä", "Avoindata.fi", "2023", "https://www.opendata.fi/data/fi/dataset/pohjois-savo-ostolaskut", 62.89, 27.68],
-    ["HUS", "Kyllä", "HUS.fi", "2024", "https://www.hus.fi/ostot", 60.22, 24.75],
-    ["Ahvenanmaa", "Ei", "-", "-", "", 60.10, 19.94],
     ["Kanta-Häme", "Ei", "-", "-", "", 60.99, 24.46],
     ["Kymenlaakso", "Ei", "-", "-", "", 60.57, 26.86],
     ["Satakunta", "Ei", "-", "-", "", 61.49, 21.80],
@@ -47,11 +54,9 @@ data = [
     ["Etelä-Pohjanmaa", "Ei", "-", "-", "", 62.79, 22.84],
     ["Keski-Suomi", "Ei", "-", "-", "", 62.24, 25.75],
     ["Itä-Savo", "Ei", "-", "-", "", 62.02, 28.29],
-    ["Länsi-Pohja", "Ei", "-", "-", "", 65.83, 24.25],
-    ["Vaasa", "Ei", "-", "-", "", 63.10, 21.61],
-    ["Itä-Uusimaa", "Ei", "-", "-", "", 60.40, 25.50],
-    ["Länsi-Uusimaa", "Ei", "-", "-", "", 60.12, 24.50],
-    ["Vantaa ja Kerava", "Ei", "-", "-", "", 60.30, 25.04]
+    ["Itä-Uusimaa", "Ei", "-", "-", "", 60.40, 25.22],
+    ["Länsi-Uusimaa", "Ei", "-", "-", "", 60.13, 24.38],
+    ["Vantaa ja Kerava", "Ei", "-", "-", "", 60.31, 25.02]
 ]
 
 columns = ["Hyvinvointialue", "Julkaistu", "Julkaisualusta", "Päivitetty", "Lähde", "Latitude", "Longitude"]
@@ -69,7 +74,7 @@ st.markdown("Tämä sovellus esittää Suomen hyvinvointialueiden ostolaskudatan
 # Kartta
 st.header("🗺️ Karttanäkymä: Julkaisutilanne")
 st.pydeck_chart(pdk.Deck(
-    initial_view_state=pdk.ViewState(latitude=63.0, longitude=25.0, zoom=4.5),
+    initial_view_state=pdk.ViewState(latitude=63.0, longitude=25.0, zoom=4.3),
     layers=[
         pdk.Layer(
             "ScatterplotLayer",
