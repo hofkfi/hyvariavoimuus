@@ -65,7 +65,7 @@ csv = df.to_csv(index=False).encode("utf-8")
 st.sidebar.download_button("📥 Lataa CSV", csv, "ostolaskudata_2025.csv", "text/csv")
 
 # Titteli
-st.title("📊 Hyvinvointialueiden Ostolaskudatan Julkaisutilanne – 2025")
+st.title("📊 Hyvinvointialueiden ostolaskudatan julkaisutilanne – 2025")
 st.markdown("Tämä sovellus esittää Suomen hyvinvointialueiden ostolaskudatan julkaisutilanteen maaliskuussa 2025.")
 
 # Kartta
@@ -86,11 +86,11 @@ st.pydeck_chart(pdk.Deck(
 ))
 
 # Julkaisujen määrä
-st.header("📈 Kokonaiskuva Julkaisutilanteesta")
+st.header("📈 Kokonaiskuva julkaisutilanteesta")
 st.bar_chart(df["Julkaistu"].value_counts())
 
 # Valitse alue
-st.header("🔍 Yksittäisen Alueen Tiedot")
+st.header("🔍 Yksittäisen alueen tiedot")
 alue = st.selectbox("Valitse hyvinvointialue", df["Hyvinvointialue"])
 rivi = df[df["Hyvinvointialue"] == alue].iloc[0]
 st.markdown(f"""
@@ -102,7 +102,7 @@ st.markdown(f"""
 """)
 
 # Yhteenveto
-st.header("🧭 Yhteenveto ja Kehitysehdotuksia")
+st.header("🧭 Yhteenveto ja kehitysehdotuksia")
 st.markdown("""
 - 💡 Tarvetta harmonisoida julkaisutavat ja -formaatit.  
 - 🌐 Avoindata.fi tai vastaava yhteinen portaali parantaisi saatavuutta.  
