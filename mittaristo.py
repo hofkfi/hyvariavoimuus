@@ -13,10 +13,10 @@ with st.sidebar:
     [Kuntien ja kuntayhtymien ostolaskudatan avaamisen ohje (2021)](https://www.kuntaliitto.fi/julkaisut/2021/2112-kuntien-ja-kuntayhtymien-ostolaskudatan-avaamisen-ohje)
 
     **🌐 Avoindata.fi Julkaisijan opas:**  
-    [Avoindata.fi - Julkaisijan ohjeet](https://www.avoindata.fi/fi/info/publisher-guide)
+    [Avoindata.fi - Julkaisijan ohjeet](https://www.avoindata.fi/fi/kayttoohjeet)
 
     **🧰 Työkalut:**
-    - [Open Data Editor (ODE)](https://github.com/OKFIFinland/Open-Data-Editor)  
+    - [Open Data Editor (ODE)](https://opendataeditor.okfn.org/)  
     - [DCAT-AP Validator](https://www.dcat-ap-validator.eu/)  
     """)
 
@@ -36,7 +36,7 @@ data = np.random.randint(20, 100, size=(len(regions), len(categories)))
 df = pd.DataFrame(data, index=regions, columns=categories)
 
 # Titteli
-st.title("Hyvinvointialueiden Open Data Maturity Mittaristo")
+st.title("Hyvinvointialueiden Open Data Maturity -Mittaristo")
 st.markdown("Visualisointi hyvinvointialueiden avoimen datan kypsyydestä neljässä pääkategoriassa:")
 
 # Selitys
