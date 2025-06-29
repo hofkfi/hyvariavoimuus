@@ -14,10 +14,7 @@ with st.sidebar:
     [Kuntaliiton suositukset avoimen datan julkaisemiseen](https://www.kuntaliitto.fi/tietoa-kunnista/paattajalle/avoin-data)
 
     **🌐 Avoindata.fi Julkaisijan opas:**  
-    [Avoindata.fi - Julkaisijan ohjeet](https://www.avoindata.fi/fi/info/publisher-guide)
-
-    **🛡️ Tietosuoja ja anonymisointi:**  
-    [VM:n arviomuistio 2024](https://www.lausuntopalvelu.fi/)
+    [Avoindata.fi - Julkaisijan ohjeet](https://www.avoindata.fi/fi/kayttoohjeet)
 
     **🧰 Työkalut:**  
     - [OpenRefine](https://openrefine.org/) – tietojen siivoamiseen ja rakenteistamiseen  
