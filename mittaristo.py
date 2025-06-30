@@ -49,7 +49,7 @@ with st.expander("ℹ️ Mittariston selitys"):
     """)
 
 # Visualisointi: bar chart
-st.subheader("📊 Aluekohtainen vertailu (bar chart)")
+st.subheader("📊 Aluekohtainen vertailu")
 st.bar_chart(df)
 
 # Interaktiivinen aluevalinta
