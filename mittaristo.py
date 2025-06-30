@@ -37,7 +37,7 @@ df = pd.DataFrame(data, index=regions, columns=categories)
 
 # Titteli
 st.title("Hyvinvointialueiden Open Data Maturity -Mittaristo")
-st.markdown("Visualisointi hyvinvointialueiden avoimen datan kypsyydestä neljässä pääkategoriassa:")
+st.markdown("Visualisointi hyvinvointialueiden avoimen datan kypsyydestä neljässä pääkategoriassa (Mock-up datalla):")
 
 # Selitys
 with st.expander("ℹ️ Mittariston selitys"):
